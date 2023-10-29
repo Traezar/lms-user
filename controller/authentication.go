@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Register(context *gin.Context) {
+func Signup(context *gin.Context) {
 	var input model.AuthenticationInput
 
 	if err := context.ShouldBindJSON(&input); err != nil {
@@ -25,14 +25,14 @@ func Register(context *gin.Context) {
 		Gender:      input.Gender,
 	}
 
-	savedUser, err := user.Save()
+	_, err := user.Save()
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	context.JSON(http.StatusCreated, gin.H{"user": savedUser})
+	context.JSON(http.StatusCreated, gin.H{"message": "Success"})
 }
 
 func Login(context *gin.Context) {
@@ -63,5 +63,5 @@ func Login(context *gin.Context) {
 		return
 	}
 
-	context.JSON(http.StatusOK, gin.H{"jwt": jwt})
+	context.JSON(http.StatusOK, gin.H{"access_token": jwt})
 }

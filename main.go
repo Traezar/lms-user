@@ -1,9 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
-	"net/http"
 
+	"lms-user/controller"
 	"lms-user/database"
 	"lms-user/model"
 
@@ -14,7 +15,7 @@ import (
 func loadDatabase() {
 	database.Connect()
 	database.Database.AutoMigrate(&model.User{})
-	// database.Database.AutoMigrate(&model.Entry{})
+
 }
 
 func loadEnv() {
@@ -25,13 +26,18 @@ func loadEnv() {
 }
 
 func main() {
-	// loadEnv()
-	// loadDatabase()
-	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
-	})
-	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	loadEnv()
+	loadDatabase()
+	runApplication()
+}
+
+func runApplication() {
+	router := gin.Default()
+
+	publicRoutes := router.Group("/auth")
+	publicRoutes.POST("/register", controller.Signup)
+	publicRoutes.POST("/login", controller.Login)
+	router.Run(":8000")
+	fmt.Println("Server running on port 8000")
+
 }
