@@ -1,0 +1,22 @@
+FROM golang:1.21-alpine
+
+RUN apk update && apk add --no-cache git && apk add --no-cach bash && apk add build-base
+
+# Setup folders
+RUN mkdir /lms-user
+RUN mkdir -p out/bin
+WORKDIR /lms-user
+
+# Copy the source from the current directory to the working Directory inside the container
+ADD . /lms-user
+
+# Install the package
+RUN  go install -v ./...
+
+
+RUN env GO111MODULE=on GOOS=linux GOARCH=amd64 go build -mod vendor -o out/bin/lms-user
+
+RUN chmod +x  ./out/bin/lms-user
+ENTRYPOINT [ "./out/bin/lms-user" ]
+
+
