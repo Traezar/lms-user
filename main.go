@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"net/http"
 
 	"lms-user/controller"
 	"lms-user/database"
@@ -33,11 +34,26 @@ func main() {
 
 func runApplication() {
 	router := gin.Default()
+	router.LoadHTMLGlob("views/*html")
 
-	publicRoutes := router.Group("/auth")
-	publicRoutes.POST("/register", controller.Signup)
-	publicRoutes.POST("/login", controller.Login)
-	router.Run(":8000")
+	// Routes
+	router.GET("/signup", getSignupForm)
+	router.GET("/login", getLoginForm)
+
+	router.POST("/logout", getLoginForm)
+	router.POST("/signup", controller.SignupForm)
+	router.POST("/login", controller.LoginForm)
+
+	router.POST("/register", controller.Signup)
+	router.GET("/ping", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"message": "pong"}) })
+
 	fmt.Println("Server running on port 8000")
+	router.Run(":8000")
+}
 
+func getSignupForm(ctx *gin.Context) {
+	ctx.HTML(http.StatusOK, "signup.html", nil)
+}
+func getLoginForm(ctx *gin.Context) {
+	ctx.HTML(http.StatusOK, "login.html", nil)
 }

@@ -1,10 +1,15 @@
 package model
 
-type AuthenticationInput struct {
-	Name        string `json:"name" binding:"required"`
-	Email       string `json:"email" binding:"required"`
-	Password    string `json:"password" binding:"required"`
-	Country     string `json:"country" binding:"required"`
-	Phonenumber string `json:"phonenumber" binding:"required"`
-	Gender      string `json:"gender" binding:"required"`
+type SignupInput struct {
+	Name        string `form:"name" json:"name" binding:"required"`
+	Email       string `form:"email" json:"email" binding:"required"`
+	Password    string `form:"password" json:"password" binding:"required"`
+	Country     string `form:"country" json:"country" binding:"required"`
+	Phonenumber string `form:"phonenumber" json:"phonenumber" binding:"required"`
+	Gender      string `form:"gender" json:"gender" binding:"required"`
+}
+
+type LoginInput struct {
+	Name     string `form:"name" json:"name" binding:"required"`
+	Password string `form:"password" json:"password" binding:"required"`
 }
