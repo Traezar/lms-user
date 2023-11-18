@@ -63,7 +63,7 @@ docker-build-pg: ## Use the dockerfile to build the container
 	docker build --platform linux/amd64 --rm --tag lms-pg . -f Dockerfile.pg
 migrate: ## Use the dockerfile to build the container
 	docker build --platform linux/amd64 --rm --tag lms-migrate . -f Dockerfile.migrate
-	docker run --rm  --volume pgdata:/lmsuser/data lms-migrate
+	docker run  --rm  --volume pgdata:/lmsuser/data lms-migrate
 
 run: docker-build-pg docker-build-user
-	docker-compose up
+	docker-compose up 
