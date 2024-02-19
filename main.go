@@ -34,8 +34,8 @@ func main() {
 
 func runApplication() {
 	router := gin.Default()
-	router.LoadHTMLGlob("views/*html")
-
+	router.Static("/views", "./public/views")
+	router.LoadHTMLGlob("./public/views/*html")
 	// Routes
 	router.GET("/signup", getSignupForm)
 	router.GET("/login", getLoginForm)

@@ -21,13 +21,14 @@ here:
 all: help
 
 ## Build:
-build: ## Build your project and put the output binary in out/bin/
+build: tailwind
 	mkdir -p out/bin
 	env GO111MODULE=on GOOS=linux GOARCH=amd64 $(GOCMD)  build -mod vendor -o out/bin/$(BINARY_NAME) .
 
 clean: ## Remove build related file
 	rm -fr ./bin
 	rm -fr ./out
+	rm -fr ./public/output.css
 	rm -f ./junit-report.xml checkstyle-report.xml ./coverage.xml ./profile.cov yamllint-checkstyle.xml
 
 vendor: ## Copy of all packages needed to support builds and tests in the vendor directory
@@ -57,13 +58,20 @@ endif
 
 
 ## Docker:
-docker-build-user:
+dockerlint: 
+
+docker-build-user: tailwind
+	docker run -it --rm -v "./Dockerfile.user":/Dockerfile:ro redcoolbeans/dockerlint
 	docker build --platform linux/amd64 --rm --tag lms-user:latest . -f Dockerfile.user
 docker-build-pg: ## Use the dockerfile to build the container
+	docker run -it --rm -v "./Dockerfile.pg":/Dockerfile:ro redcoolbeans/dockerlint
 	docker build --platform linux/amd64 --rm --tag lms-pg . -f Dockerfile.pg
 migrate: ## Use the dockerfile to build the container
 	docker build --platform linux/amd64 --rm --tag lms-migrate . -f Dockerfile.migrate
 	docker run  --rm  --volume pgdata:/lmsuser/data lms-migrate
 
-run: docker-build-pg docker-build-user
+run:  docker-build-pg docker-build-user
 	docker-compose up 
+
+tailwind:
+	cd public && npx tailwindcss -i ./styles.css -o ./output.css

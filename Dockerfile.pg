@@ -1,5 +1,5 @@
 FROM postgres:12.0-alpine
 
 RUN mkdir -p /tmp/data/
-ADD migrations/*.csv /tmp/data/
-ADD migrations/createdb.sh /docker-entrypoint-initdb.d/
+COPY migrations/*.csv /tmp/data/
+COPY migrations/createdb.sh /docker-entrypoint-initdb.d/
