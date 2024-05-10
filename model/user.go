@@ -12,13 +12,11 @@ import (
 
 type User struct {
 	gorm.Model
-
-	Name        string `gorm:"size:255;not null;unique" json:"name"`
-	Email       string `gorm:"size:255;not null;unique;" json:"email"`
-	Password    string `gorm:"size:255;not null;" json:"-"`
-	Country     string `gorm:"size:255;not null;" json:"country"`
-	Phonenumber string `gorm:"size:255;not null;" json:"phonenumber"`
-	Gender      string `gorm:"size:255;not null;" json:"gender"`
+	ID        uint   `gorm:"primaryKey"`
+	Name      string `gorm:"size:255;not null;unique" json:"name"`
+	Email     string `gorm:"size:255;not null;unique;" json:"email"`
+	Password  string `gorm:"size:255;not null;" json:"-"`
+	ManagerID uint
 }
 
 func (user *User) Save() (*User, error) {
@@ -46,6 +44,15 @@ func (user *User) ValidatePassword(password string) error {
 func FindUserByName(name string) (User, error) {
 	var user User
 	err := database.Database.Where("name=?", name).Find(&user).Error
+	if err != nil {
+		return User{}, err
+	}
+	return user, nil
+}
+
+func GetUserById(id uint) (User, error) {
+	var user User
+	err := database.Database.Where("id=?", id).Find(&user).Error
 	if err != nil {
 		return User{}, err
 	}

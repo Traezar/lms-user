@@ -74,4 +74,4 @@ run:  docker-build-pg docker-build-user
 	docker-compose up 
 
 tailwind:
-	cd public && npx tailwindcss -i ./styles.css -o ./output.css
+	npx tailwindcss -i ./styles.css -o .public/views/output.css

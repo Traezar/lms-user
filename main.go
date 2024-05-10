@@ -7,6 +7,7 @@ import (
 
 	"lms-user/controller"
 	"lms-user/database"
+	"lms-user/helper"
 	"lms-user/model"
 
 	"github.com/gin-gonic/gin"
@@ -15,7 +16,7 @@ import (
 
 func loadDatabase() {
 	database.Connect()
-	database.Database.AutoMigrate(&model.User{})
+	database.Database.AutoMigrate(&model.User{}, &model.Leave{})
 
 }
 
@@ -34,26 +35,21 @@ func main() {
 
 func runApplication() {
 	router := gin.Default()
-	router.Static("/views", "./public/views")
-	router.LoadHTMLGlob("./public/views/*html")
-	// Routes
-	router.GET("/signup", getSignupForm)
-	router.GET("/login", getLoginForm)
 
-	router.POST("/logout", getLoginForm)
-	router.POST("/signup", controller.SignupForm)
-	router.POST("/login", controller.LoginForm)
+	//leaves
+	leavesRoutes := router.Group("/leaves")
+	leavesRoutes.Use(helper.JWTAuth())
+	leavesRoutes.GET("", controller.GetLeaves)
+	leavesRoutes.POST("/create", controller.CreateLeave)
+	leavesRoutes.POST("/approve", controller.ApproveLeaveById)
+	leavesRoutes.POST("/reject", controller.RejectLeaveById)
 
-	router.POST("/register", controller.Signup)
+	//router.POST("/logout", )
+	router.POST("/signup", controller.Signup)
+	router.POST("/login", controller.Login)
+
 	router.GET("/ping", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"message": "pong"}) })
 
 	fmt.Println("Server running on port 8000")
 	router.Run(":8000")
-}
-
-func getSignupForm(ctx *gin.Context) {
-	ctx.HTML(http.StatusOK, "signup.html", nil)
-}
-func getLoginForm(ctx *gin.Context) {
-	ctx.HTML(http.StatusOK, "login.html", nil)
 }
