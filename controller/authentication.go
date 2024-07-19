@@ -61,3 +61,8 @@ func Login(context *gin.Context) {
 
 	context.JSON(http.StatusOK, gin.H{"access_token": jwt})
 }
+
+func ViewUserToken(context *gin.Context) {
+	user := helper.CurrentUser(context)
+	context.JSON(http.StatusOK, gin.H{"user": user})
+}

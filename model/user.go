@@ -4,6 +4,7 @@ import (
 	"html"
 	"lms-user/database"
 	"strings"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 
@@ -11,16 +12,26 @@ import (
 )
 
 type User struct {
-	gorm.Model
-	ID        uint   `gorm:"primaryKey"`
-	Name      string `gorm:"size:255;not null;unique" json:"name"`
-	Email     string `gorm:"size:255;not null;unique;" json:"email"`
-	Password  string `gorm:"size:255;not null;" json:"-"`
-	ManagerID uint
+	ID        uint `gorm:"primarykey"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt time.Time `gorm:"index"`
+	Name      string    `gorm:"size:255;not null;unique" json:"name"`
+	Email     string    `gorm:"size:255;not null;unique;" json:"email"`
+	Password  string    `gorm:"size:255;not null;" json:"-"`
+	ManagerID uint      `json:"manager_id"`
 }
 
 func (user *User) Save() (*User, error) {
 	err := database.Database.Create(&user).Error
+	if err != nil {
+		return &User{}, err
+	}
+	return user, nil
+}
+
+func (user *User) Update() (*User, error) {
+	err := database.Database.Where("id = ?", user.ID).Updates(&user).Error
 	if err != nil {
 		return &User{}, err
 	}

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"errors"
 	"lms-user/database"
 	"lms-user/helper"
 	"lms-user/model"
@@ -34,17 +35,7 @@ func CreateLeave(context *gin.Context) {
 		return
 	}
 
-	applicantId, err := strconv.ParseUint(request.ApplicantId, 10, 32)
-	if err != nil {
-		ErrorHandler(context, err)
-		return
-	}
-
-	currentUser := helper.CurrentUser(context)
-	if currentUser.ID != uint(applicantId) {
-		ErrorHandler(context, ErrNotFound)
-		return
-	}
+	applicantId := helper.CurrentUser(context).ID
 
 	managerId, err := strconv.ParseUint(request.ManagerId, 10, 32)
 	if err != nil {
@@ -65,7 +56,7 @@ func CreateLeave(context *gin.Context) {
 	}
 
 	leave := model.Leave{
-		ApplicantID:   uint(applicantId),
+		ApplicantID:   applicantId,
 		ManagerID:     uint(managerId),
 		Type:          "Holiday",
 		Status:        PENDING,
@@ -89,6 +80,12 @@ func GetLeaves(context *gin.Context) {
 		ErrorHandler(context, err)
 		return
 	}
+
+	if request.ApplicantId == "" {
+		ErrorHandler(context, errors.New("missing in request ApplicantId"))
+		return
+	}
+
 	err := database.Database.
 		Where("applicant_id=?", request.ApplicantId).
 		Where("deleted_at IS NULL").
@@ -141,6 +138,11 @@ func RejectLeaveById(context *gin.Context) {
 	}
 
 	currentUser := helper.CurrentUser(context)
+	if (currentUser == model.User{}) {
+		ErrorHandler(context, errors.New("provide user"))
+		return
+	}
+
 	managerId, err := strconv.ParseUint(request.ManagerId, 10, 32)
 	if err != nil {
 		ErrorHandler(context, err)

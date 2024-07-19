@@ -60,7 +60,7 @@ endif
 ## Docker:
 dockerlint: 
 
-docker-build-user: tailwind
+docker-build-user: 
 	docker run -it --rm -v "./Dockerfile.user":/Dockerfile:ro redcoolbeans/dockerlint
 	docker build --platform linux/amd64 --rm --tag lms-user:latest . -f Dockerfile.user
 docker-build-pg: ## Use the dockerfile to build the container

@@ -48,6 +48,12 @@ func runApplication() {
 	router.POST("/signup", controller.Signup)
 	router.POST("/login", controller.Login)
 
+	//manager
+	leavesRoutes.GET("/view_user", controller.ViewUserToken)
+	leavesRoutes.GET("/view_team", controller.ViewTeam)
+	leavesRoutes.POST("/add_team", controller.AddUsertoTeam)
+	leavesRoutes.GET("/pending_leaves", controller.ViewPendingTeamLeaves)
+
 	router.GET("/ping", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"message": "pong"}) })
 
 	fmt.Println("Server running on port 8000")
